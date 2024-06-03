@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 
 import 'multipart_file_extended.dart';
-
+import 'package:{{ projectName.snakeCase() }}/features/common/data/local/app_info_store.dart';
+import 'package:{{ projectName.snakeCase() }}/features/common/data/remote/multipart_file_recreatable.dart';
+import 'package:{{ projectName.snakeCase() }}/features/common/ui/generic/utils/string_extension.dart';
+import 'package:{{ projectName.snakeCase() }}/services/generic/crash/crash_service.dart';
 class RequestRetrier {
   RequestRetrier({
     required this.appInfoStore,

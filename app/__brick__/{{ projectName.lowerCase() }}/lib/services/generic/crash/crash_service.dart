@@ -1,6 +1,6 @@
 {{#useFirebase}}import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart';
 import 'uncaught_error_handler_release.dart';{{/useFirebase}}
+import 'package:flutter/foundation.dart';
 import 'uncaught_error_handler_debug.dart';
 import 'uncaught_error_handler.dart';
 
