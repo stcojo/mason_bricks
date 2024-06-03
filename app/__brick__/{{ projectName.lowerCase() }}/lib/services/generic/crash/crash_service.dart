@@ -38,6 +38,10 @@ class CrashService {
     _uncaughtErrorHandler.log(msg);
   }
 
+  Future<void> handleAppError(dynamic exception, dynamic stack) async {
+    return _uncaughtErrorHandler.handleAppError(exception, stack);
+  }
+
   Future<void> setUserId(String? userId) {
     return _uncaughtErrorHandler.setUserId(userId);
   }
