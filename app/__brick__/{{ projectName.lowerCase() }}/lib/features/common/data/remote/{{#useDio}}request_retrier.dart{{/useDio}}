@@ -4,52 +4,69 @@ import 'multipart_file_extended.dart';
 
 class RequestRetrier {
   RequestRetrier({
+    required this.appInfoStore,
+    required this.crashService,
     required this.dio,
   });
 
+  final AppInfoStore appInfoStore;
+  final CrashService crashService;
   final Dio dio;
 
   Future<Response> requestRetry(RequestOptions requestOptions) async {
-    if (requestOptions.data is FormData) {
+  if (requestOptions.data is FormData) {
       // https://github.com/flutterchina/dio/issues/482
       final FormData formData = FormData();
-      formData.fields.addAll(requestOptions.data.fields);
-      // ignore: always_specify_types
-      for (MapEntry mapFile in requestOptions.data.files) {
+    formData.fields.addAll(requestOptions.data.fields);
+
+    for (MapEntry mapFile in requestOptions.data.files) {
+      String ? filePath = appInfoStore
+        .getFilePathByFilename(mapFile.value.filename as String);
+
+      crashService.reportUnexpectedError(
+        Exception('Http Exception retrier'),
+        StackTrace.fromString(
+          'Http retry conditions were met for FormData request. Retrying with data${requestOptions.data.fields}, with files ${requestOptions.data.files}'),
+        'requestRetrier');
+
+      if (filePath.isNotBlank) {
         formData.files.add(
-          // ignore: always_specify_types
           MapEntry(
-              mapFile.key,
-              MultipartFileExtended.fromFileSync(mapFile.value.filePath,
-                  filename: mapFile.value.filename)),
+            mapFile.key,
+            MultipartFileRecreatable.fromFileSync(
+              filePath!,
+              filename: mapFile.value.filename,
+            ),
+          ),
         );
       }
-      requestOptions.data = formData;
     }
-
-    return dio.request(
-      requestOptions.path,
-      cancelToken: requestOptions.cancelToken,
-      data: requestOptions.data,
-      onReceiveProgress: requestOptions.onReceiveProgress,
-      onSendProgress: requestOptions.onSendProgress,
-      queryParameters: requestOptions.queryParameters,
-      options: Options(
-        contentType: requestOptions.contentType,
-        headers: requestOptions.headers,
-        sendTimeout: requestOptions.sendTimeout,
-        receiveTimeout: requestOptions.receiveTimeout,
-        extra: requestOptions.extra,
-        followRedirects: requestOptions.followRedirects,
-        listFormat: requestOptions.listFormat,
-        maxRedirects: requestOptions.maxRedirects,
-        method: requestOptions.method,
-        receiveDataWhenStatusError: requestOptions.receiveDataWhenStatusError,
-        requestEncoder: requestOptions.requestEncoder,
-        responseDecoder: requestOptions.responseDecoder,
-        responseType: requestOptions.responseType,
-        validateStatus: requestOptions.validateStatus,
-      ),
-    );
+    requestOptions.data = formData;
   }
+
+  return dio.request(
+    requestOptions.path,
+    cancelToken: requestOptions.cancelToken,
+    data: requestOptions.data,
+    onReceiveProgress: requestOptions.onReceiveProgress,
+    onSendProgress: requestOptions.onSendProgress,
+    queryParameters: requestOptions.queryParameters,
+    options: Options(
+      contentType: requestOptions.contentType,
+      headers: requestOptions.headers,
+      sendTimeout: requestOptions.sendTimeout,
+      receiveTimeout: requestOptions.receiveTimeout,
+      extra: requestOptions.extra,
+      followRedirects: requestOptions.followRedirects,
+      listFormat: requestOptions.listFormat,
+      maxRedirects: requestOptions.maxRedirects,
+      method: requestOptions.method,
+      receiveDataWhenStatusError: requestOptions.receiveDataWhenStatusError,
+      requestEncoder: requestOptions.requestEncoder,
+      responseDecoder: requestOptions.responseDecoder,
+      responseType: requestOptions.responseType,
+      validateStatus: requestOptions.validateStatus,
+    ),
+  );
+}
 }
