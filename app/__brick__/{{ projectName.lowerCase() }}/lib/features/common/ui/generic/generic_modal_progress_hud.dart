@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class GenericModalProgressHUD extends StatelessWidget {
   const GenericModalProgressHUD({
-    Key? key,
+    super.key,
     required this.inAsyncCall,
     required this.color,
     required this.progressIndicator,
     required this.opacity,
     required this.child,
-  }) : super(key: key);
+  });
 
   final bool inAsyncCall;
   final Color color;

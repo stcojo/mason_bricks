@@ -8,7 +8,7 @@ import 'package:universal_io/io.dart';
 class GenericUniversalImage extends StatelessWidget {
   const GenericUniversalImage(
     this.uri, {
-    Key? key,
+    super.key,
     required this.color,
     required this.colorBlendMode,
     required this.width,
@@ -20,7 +20,7 @@ class GenericUniversalImage extends StatelessWidget {
     required this.useCaching,
     required this.errorColor,
     required this.errorPlaceholder,
-  }) : super(key: key);
+  });
 
   final String? uri;
   final Color? color;

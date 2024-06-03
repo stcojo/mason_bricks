@@ -6,13 +6,13 @@ import 'circular_progress.dart';
 
 class ModalProgressHUD extends StatelessWidget {
   const ModalProgressHUD({
-    Key? key,
+    super.key,
     required this.inAsyncCall,
     this.color = AppColors.black,
     this.progressIndicator = const CircularProgress(),
     this.opacity = 0.3,
     required this.child,
-  }) : super(key: key);
+  });
 
   final bool inAsyncCall;
   final Color color;

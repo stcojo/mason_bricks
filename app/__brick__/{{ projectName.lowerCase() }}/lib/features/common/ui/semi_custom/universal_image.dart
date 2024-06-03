@@ -6,7 +6,7 @@ import '../generic/generic_universal_image.dart';
 class UniversalImage extends StatelessWidget {
   const UniversalImage(
     this.uri, {
-    Key? key,
+    super.key,
     this.color,
     this.colorBlendMode,
     this.width,
@@ -16,7 +16,7 @@ class UniversalImage extends StatelessWidget {
     this.fit,
     this.isCircle = false,
     this.useCaching = true,
-  }) : super(key: key);
+  });
 
   final String uri;
   final Color? color;
