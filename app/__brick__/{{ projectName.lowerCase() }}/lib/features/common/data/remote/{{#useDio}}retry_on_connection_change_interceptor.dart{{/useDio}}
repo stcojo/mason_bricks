@@ -1,0 +1,45 @@
+import 'package:dio/dio.dart';
+import 'package:{{ projectName.snakeCase() }}/features/common/data/local/app_info_store.dart';
+import 'package:{{ projectName.snakeCase() }}/services/generic/crash/crash_service.dart';
+import 'package:universal_io/io.dart';
+
+import 'request_retrier.dart';
+
+class RetryOnConnectionChangeInterceptor extends Interceptor {
+  RetryOnConnectionChangeInterceptor(
+      {required this.appInfoStore,
+      required this.crashService,
+      required this.dio});
+
+  final AppInfoStore appInfoStore;
+  final CrashService crashService;
+  final Dio dio;
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (_shouldRetryOnHttpException(err)) {
+      try {
+        final Response response = await RequestRetrier(
+                appInfoStore: appInfoStore,
+                crashService: crashService,
+                dio: dio)
+            .requestRetry(err.requestOptions);
+        handler.resolve(response);
+        return;
+      } catch (e) {
+        handler.next(err);
+      }
+    } else {
+      handler.next(err);
+    }
+  }
+
+  bool _shouldRetryOnHttpException(DioException err) {
+    return err.error is HttpException &&
+        err.message != null &&
+        (err.message!.contains(
+                'Connection closed before full header was received') ||
+            err.message!.contains('No address associated with') ||
+            err.message!.contains('Failed host lookup'));
+  }
+}

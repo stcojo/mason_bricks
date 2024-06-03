@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:{{ projectName.snakeCase() }}/features/common/ui/generic/utils/string_extension.dart';
 
 class AppInfoStore {
   late SharedPreferences prefs;
@@ -38,11 +40,24 @@ class AppInfoStore {
   bool trackLogsInFile() {
     return prefs.getBool(_keyTrackLogsInFile) ?? false;
   }
+
+  String? getFilePathByFilename(String fileName) {
+    String? mapAsString = prefs.getString(_keyFilePathsByFilenames);
+
+    if (mapAsString.isNotBlank) {
+      Map<String, dynamic> decodedMap = jsonDecode(mapAsString!);
+      String? foundPath = decodedMap[fileName];
+      return foundPath;
+    } else {
+      return null;
+    }
+  }
 }
 
 const String _keyIsFirstTime = 'isFirstTime';
 const String _keyVersionCode = 'versionCode';
 const String _keyTrackLogsInFile = 'track_logs_in_file';
+const String _keyFilePathsByFilenames = 'filePathsByFilenames';
 
 class AppInfo {
   AppInfo(this.isFirstTime, this.oldVersionCode, this.currentVersionCode);

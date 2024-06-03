@@ -1,7 +1,7 @@
-{{#useDio}}import 'package:dio/dio.dart';
+import 'package:dio/dio.dart';
 
-String mapErrorDetails(DioError e) {
-  String errorDetails = e.message;
+String mapErrorDetails(DioException e) {
+  String errorDetails = e.message ?? '';
   errorDetails += '\n\n' '${e.requestOptions.method} ${e.requestOptions.uri}';
   if (e.response != null && e.response?.data != null) {
     errorDetails += '\n\n${e.response!.data}';
@@ -9,11 +9,11 @@ String mapErrorDetails(DioError e) {
   if (e.error is Error) {
     errorDetails += '\n\n${(e.error as Error).stackTrace}';
   }
-  if (e.stackTrace != null) {
-    errorDetails += '\n\n${e.stackTrace}';
-  }
+
+  errorDetails += '\n\n${e.stackTrace}';
+
   return errorDetails;
-}{{/useDio}}
+}
 
 String mapGeneralErrorDetails(dynamic e, dynamic stackTrace) {
   String errorDetails = e.toString();
